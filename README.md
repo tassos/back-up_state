@@ -1,4 +1,4 @@
-back-up_state
+Back-up State
 =============
 
 A cinnamon applet for checking the state of the date of the last succefull back-up.

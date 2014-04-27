@@ -16,6 +16,15 @@
         "step": 1,
         "description": "Error after days:  "
     },
+      
+    "refresh_int": {
+        "type": "scale",
+        "default": 2,
+        "min": 1,
+        "max": 3600,
+        "step": 1,
+        "description": "Refresh interval (min):  "
+    },
     
     "log_file" : {
         "type" : "filechooser",
@@ -29,5 +38,5 @@
         "description" : "String to be searched for ",
         "default" : "total size is",
         "tooltip" : "Set the string that will be searched for in your log file, to determine the last good back-up"
-    }
+    }    
 }

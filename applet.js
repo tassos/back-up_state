@@ -10,7 +10,6 @@ const Gettext = imports.gettext.domain("cinnamon-applets");
 const _ = Gettext.gettext;
 
 const UUID = "back-up_state@natsakis.com";
-const refresh_interval = 10; // In seconds
 
 function logError(error) {
     global.logError(UUID + '#' + logError.caller.name + ': ' + error);
@@ -36,21 +35,20 @@ MyApplet.prototype = {
       this._opt_warningDays = null;
       this._opt_errorDays = null;
       this._opt_logFile = null;
+      this._opt_refreshInt = null;
         
     	this.metadata = metadata;
     	this._settingsProvider = new Settings.AppletSettings(this, metadata.uuid, instance_id);
     	this._bindSettings();
     	
-    	
-        try{
-            this._status = this._findDate();
-            this.set_applet_tooltip(this._findDate());
-          
-        }
-        catch(e){
-          logError(e);
-        }
-        this.refreshState();
+      try{
+          this._status = this._findDate();
+          this.set_applet_tooltip(this._findDate());
+      }
+      catch(e){
+        logError(e);
+      }
+      this.refreshState();
     },
 
     refreshState: function refreshLocation() {
@@ -69,7 +67,7 @@ MyApplet.prototype = {
           }
           this.set_applet_tooltip("Last successful back-up completed on " + this._findDate());
 
-            Mainloop.timeout_add_seconds(refresh_interval, Lang.bind(this, function refreshTimeout() {
+            Mainloop.timeout_add_seconds(this._opt_refreshInt*60, Lang.bind(this, function refreshTimeout() {
                 this.refreshState();
             }));
     },
@@ -117,6 +115,13 @@ MyApplet.prototype = {
             Settings.BindingDirection.IN,
             "id_string",
             "_opt_idString",
+            emptyCallback
+        );
+        
+        this._settingsProvider.bindProperty(
+            Settings.BindingDirection.IN,
+            "refresh_int",
+            "_opt_refreshInt",
             emptyCallback
         );
     }

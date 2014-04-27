@@ -2,5 +2,4 @@
   "uuid": "back-up_state@natsakis.com",
   "name": "Back-up State",
   "description": "Probes for the state of a certain rsync back-up by checking the exit status of the log file",
-  "icon": "object-select-symbolic"
 }

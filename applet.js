@@ -52,20 +52,26 @@ MyApplet.prototype = {
     },
 
     refreshState: function refreshLocation() {
-          shortDate = new Date(this._findDate());
-          longDate = new Date(this._findDate());
-          shortDate.setDate(shortDate.getDate() + this._opt_warningDays);
-          longDate.setDate(longDate.getDate() + this._opt_errorDays);
-          if (longDate < new Date()) {
+          if (this._findDate() == 'Has never run successfully!') {
             this.set_applet_icon_name("dialog-error-symbolic");
-          }
-          else if (shortDate < new Date()) {
-            this.set_applet_icon_name("dialog-warning-symbolic");
+            this.set_applet_tooltip('Has never run succesfully!');
           }
           else {
-            this.set_applet_icon_name("object-select-symbolic");
+            shortDate = new Date(this._findDate());
+            longDate = new Date(this._findDate());
+            shortDate.setDate(shortDate.getDate() + this._opt_warningDays);
+            longDate.setDate(longDate.getDate() + this._opt_errorDays);
+            if (longDate < new Date()) {
+              this.set_applet_icon_name("dialog-error-symbolic");
+            }
+            else if (shortDate < new Date()) {
+              this.set_applet_icon_name("dialog-warning-symbolic");
+            }
+            else {
+              this.set_applet_icon_name("object-select-symbolic");
+            }
+            this.set_applet_tooltip("Last successful back-up completed on " + this._findDate());
           }
-          this.set_applet_tooltip("Last successful back-up completed on " + this._findDate());
 
             Mainloop.timeout_add_seconds(this._opt_refreshInt*60, Lang.bind(this, function refreshTimeout() {
                 this.refreshState();
@@ -73,6 +79,7 @@ MyApplet.prototype = {
     },
     
     _searchStringInArray: function (str, strArray) {
+      k = null;
       for (var j=0; j<strArray.length; j++) {
           if (strArray[j].match(str)) k = j;
       }
@@ -80,11 +87,21 @@ MyApplet.prototype = {
     },
     
     _findDate: function () {
-        let logs = Cinnamon.get_file_contents_utf8_sync(this._opt_logFile);
-        let lines = logs.split('\n');
-        index = this._searchStringInArray(this._opt_idString,lines);
-
-        return String(lines[index]).substring(0,19);
+        try {
+          let logs = Cinnamon.get_file_contents_utf8_sync(this._opt_logFile);
+          let lines = logs.split('\n');
+          index = this._searchStringInArray(this._opt_idString,lines);
+          
+          if (index == null) {
+            return 'Has never run successfully!';
+          }
+          else {
+            return String(lines[index]).substring(0,19);
+          }
+        }
+        catch(e) {
+          global.logError(e);
+        }
     },
     
     _bindSettings: function() {

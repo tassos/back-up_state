@@ -29,7 +29,7 @@
     "log_file" : {
         "type" : "filechooser",
         "description" : "Log file ",
-        "default" : "rsync.log",
+        "default" : "~/rsync.log",
         "select-dir" : false
     },
     
